@@ -410,7 +410,7 @@ class SegmentationThread(QThread):
                     else:
                         predictor.network.float()
                     _seg, probs = predictor.predict_single_npy_array(
-                        img, props, None, None, False)
+                        img, props, None, None, True)
                     fold_probs[(arch_key, fold)] = probs
 
             elapsed = time.time() - t0
