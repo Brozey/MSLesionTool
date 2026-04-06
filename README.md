@@ -1,6 +1,6 @@
 # MSLesionTool
 
-Multi-architecture nnUNet ensemble for automated MS lesion segmentation from brain MRI.
+Multi-architecture nnUNet ensemble for automated MS lesion segmentation from brain MRI. It is a part of my master thesis. I hope that you will like it. Please don't judge me harshly based on the esthetic when you see the app. It is a passion project for me. And I really wanted to make it look cool. It's my start with programming (to be honest mostly vibe coding because I'm still learning it). I have tested around 10 architecture designs from start, till I found the best combo possible. The combo wasn't based on the holdout test, so that shouldn't be a problem. If you have any tips, tricks, recommendation, I'm fully open to them. I tried to optimize it so that it works on any machine, but I have no way to test it now. So if there is any problem, contact me and I'll fix it
 
 ## Features
 
