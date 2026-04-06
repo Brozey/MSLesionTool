@@ -158,14 +158,80 @@ MSLesionTool_portable/
 - Requires NVIDIA GPU with CUDA for fast inference; CPU fallback available
 - ONNX models are approximately half the checkpoint size
 
-## Citation
+## Citations
 
+If you use this tool, please cite our work and the underlying frameworks and datasets:
+
+### This work
 ```bibtex
 @thesis{broz2025ms,
   title={Automated MS Lesion Segmentation using Multi-Architecture nnUNet Ensemble},
   author={Broz, Jindrich},
   year={2025},
   school={VSB - Technical University of Ostrava}
+}
+```
+
+### nnU-Net (segmentation framework)
+```bibtex
+@article{isensee2021,
+  title={nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
+  author={Isensee, Fabian and Jaeger, Paul F and Kohl, Simon AA and Petersen, Jens and Maier-Hein, Klaus H},
+  journal={Nature Methods},
+  volume={18},
+  number={2},
+  pages={203--211},
+  year={2021},
+  publisher={Nature Publishing Group}
+}
+```
+
+### Training datasets
+
+**MSLesSeg-2024** (93 cases — ICPR 2024 MS Lesion Segmentation Challenge):
+```bibtex
+@article{guarnera2025,
+  title={A multi-center MRI dataset of multiple sclerosis with cross-sectional and longitudinal data},
+  author={Guarnera, Francesco and Rondinella, Alessia and Mammone, Nadia and others},
+  journal={Scientific Data},
+  volume={12},
+  year={2025},
+  publisher={Nature Publishing Group}
+}
+```
+
+**WMH Challenge 2017** (60 cases — MICCAI 2017 White Matter Hyperintensity Challenge):
+```bibtex
+@article{kuijf2019,
+  title={Standardized assessment of automatic segmentation of white matter hyperintensities and results of the WMH segmentation challenge},
+  author={Kuijf, Hugo J and Biesbroek, J Matthijs and De Bresser, Jeroen and others},
+  journal={IEEE Transactions on Medical Imaging},
+  volume={38},
+  number={11},
+  pages={2556--2568},
+  year={2019},
+  publisher={IEEE}
+}
+```
+
+### Foundational architectures
+
+```bibtex
+@inproceedings{ronneberger2015,
+  title={U-Net: Convolutional Networks for Biomedical Image Segmentation},
+  author={Ronneberger, Olaf and Fischer, Philipp and Brox, Thomas},
+  booktitle={MICCAI},
+  pages={234--241},
+  year={2015},
+  publisher={Springer}
+}
+
+@inproceedings{he2016,
+  title={Deep Residual Learning for Image Recognition},
+  author={He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  booktitle={CVPR},
+  pages={770--778},
+  year={2016}
 }
 ```
 
