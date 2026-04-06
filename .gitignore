@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Model weights (too large for git — use Git LFS or download separately)
+msseg/cnn3d/fold_*/
+msseg/resencl3d/fold_*/
+msseg/conv25d/fold_*/
+!msseg/cnn3d/fold_*/.gitkeep
+!msseg/resencl3d/fold_*/.gitkeep
+!msseg/conv25d/fold_*/.gitkeep
+
+# ONNX exported models
+*.onnx
+
+# TensorRT engine files
+*.engine
+
+# Benchmark / experiment scripts (contain local paths)
+bench_*.py
+
+# Splash screen mesh assets (generated, not needed at runtime)
+splash_brains/
+msseg/splash_mesh.npz
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.exe
+
+# Logs
+*.log
+MSLesionTool_log.txt
+msseg_crash.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary
+*.tmp
+*.bak

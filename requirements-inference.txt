@@ -1,0 +1,17 @@
+# Minimal dependencies for CLI / Docker inference (no GUI).
+#
+# RECOMMENDED: Use the automatic installer instead:
+#   python install.py --cli-only
+#
+# If installing manually, install PyTorch first:
+#   https://pytorch.org/get-started/locally/
+
+numpy>=1.24
+SimpleITK
+nibabel
+scipy
+tqdm
+nnunetv2>=2.5
+dynamic-network-architectures>=0.4
+kornia
+onnxruntime-gpu>=1.16

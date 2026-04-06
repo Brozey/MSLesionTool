@@ -1,0 +1,25 @@
+# Full dependencies for MSLesionTool GUI.
+#
+# RECOMMENDED: Use the automatic installer instead:
+#   python install.py
+# It detects your GPU and installs the correct PyTorch + CUDA version.
+#
+# If installing manually, install PyTorch first:
+#   https://pytorch.org/get-started/locally/
+# Then: pip install -r requirements.txt
+
+PyQt6>=6.5
+numpy>=1.24
+matplotlib>=3.7
+nnunetv2>=2.5
+SimpleITK
+nibabel
+scipy
+pyqtgraph
+PyOpenGL
+scikit-image
+tqdm
+dynamic-network-architectures>=0.4
+kornia
+onnx>=1.14
+onnxruntime-gpu>=1.16

@@ -1,0 +1,24 @@
+# Base dependencies for MSLesionTool GUI.
+# PyTorch, torchvision, and nnunetv2 are NOT listed here —
+# they are handled by install.py with proper CUDA detection.
+
+# Core scientific
+numpy>=1.24
+scipy
+matplotlib>=3.7
+SimpleITK
+nibabel
+tqdm
+
+# GUI
+PyQt6>=6.5
+pyqtgraph
+PyOpenGL
+scikit-image
+
+# nnUNet transitive deps (needed when installing nnunetv2 with constraints)
+dynamic-network-architectures>=0.4
+acvl_utils>=0.2
+batchgenerators>=0.25
+batchgeneratorsv2>=0.2
+kornia
