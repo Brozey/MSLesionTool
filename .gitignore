@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 *.pyo
 
-# Model weights (too large for git — use Git LFS or download separately)
+# Model weights (download from HuggingFace: huggingface.co/Broozey/MSLesionTool)
 msseg/cnn3d/fold_*/
 msseg/resencl3d/fold_*/
 msseg/conv25d/fold_*/
@@ -18,10 +18,13 @@ msseg/conv25d/fold_*/
 # TensorRT engine files
 *.engine
 
+# PyTorch checkpoints
+*.pth
+
 # Benchmark / experiment scripts (contain local paths)
 bench_*.py
 
-# Splash screen mesh assets (generated, not needed at runtime)
+# Splash screen mesh assets
 splash_brains/
 msseg/splash_mesh.npz
 
@@ -50,3 +53,17 @@ desktop.ini
 # Temporary
 *.tmp
 *.bak
+
+# Data (too large, not distributed)
+data/
+raw_data/
+profiling_results/
+wandb/
+
+# NIfTI prediction files (results of inference)
+results/predictions/
+results/xai/
+results/xai_experimental/
+
+# W&B logs
+wandb_remote/
