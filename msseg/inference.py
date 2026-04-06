@@ -57,6 +57,79 @@ def _verify_cuda(device_str):
         return "cpu"
 
 
+def _safe_initialize_predictor(predictor, model_dir, folds, checkpoint_name="checkpoint_best.pth"):
+    """Initialize predictor with fallback for missing custom trainer classes.
+
+    Custom trainers (nnUNetTrainer_WandB, etc.) may not be available in
+    frozen .exe builds.  Their build_network_architecture is identical to
+    the base nnUNetTrainer, so we fall back to get_network_from_plans.
+    """
+    from os.path import join
+    from nnunetv2.utilities.file_path_utilities import load_json
+    from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
+    from nnunetv2.utilities.find_class_by_name import recursive_find_python_class
+    import nnunetv2
+
+    if folds is None:
+        folds = nnUNetPredictor.auto_detect_available_folds(model_dir, checkpoint_name)
+
+    dataset_json = load_json(join(model_dir, 'dataset.json'))
+    plans = load_json(join(model_dir, 'plans.json'))
+    plans_manager = PlansManager(plans)
+
+    parameters = []
+    trainer_name = None
+    inference_allowed_mirroring_axes = None
+    for i, f in enumerate(folds):
+        f = int(f) if f != 'all' else f
+        checkpoint = torch.load(
+            join(model_dir, f'fold_{f}', checkpoint_name),
+            map_location=torch.device('cpu'), weights_only=False)
+        if i == 0:
+            trainer_name = checkpoint['trainer_name']
+            inference_allowed_mirroring_axes = checkpoint.get(
+                'inference_allowed_mirroring_axes', None)
+        parameters.append(checkpoint['network_weights'])
+
+    configuration_name = '3d_fullres'
+    configuration_manager = plans_manager.get_configuration(configuration_name)
+    num_input_channels = len(dataset_json['channel_names'])
+
+    # Try to find trainer class; fall back if not available (e.g. in .exe)
+    trainer_class = recursive_find_python_class(
+        join(nnunetv2.__path__[0], "training", "nnUNetTrainer"),
+        trainer_name, 'nnunetv2.training.nnUNetTrainer')
+
+    if trainer_class is not None:
+        network = trainer_class.build_network_architecture(
+            configuration_manager.network_arch_class_name,
+            configuration_manager.network_arch_init_kwargs,
+            configuration_manager.network_arch_init_kwargs_req_import,
+            num_input_channels,
+            plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+            enable_deep_supervision=False)
+    else:
+        _logger.warning("Trainer class '%s' not found, using generic network builder", trainer_name)
+        from nnunetv2.utilities.get_network_from_plans import get_network_from_plans
+        network = get_network_from_plans(
+            configuration_manager.network_arch_class_name,
+            configuration_manager.network_arch_init_kwargs,
+            configuration_manager.network_arch_init_kwargs_req_import,
+            num_input_channels,
+            plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+            deep_supervision=False)
+
+    predictor.plans_manager = plans_manager
+    predictor.configuration_manager = configuration_manager
+    predictor.list_of_parameters = parameters
+    predictor.network = network
+    predictor.dataset_json = dataset_json
+    predictor.trainer_name = trainer_name
+    predictor.allowed_mirroring_axes = inference_allowed_mirroring_axes
+    predictor.label_manager = plans_manager.get_label_manager(dataset_json)
+    network.load_state_dict(parameters[0])
+
+
 def _create_predictor_3d(model_dir, device_str, folds=(0,)):
     device_str = _verify_cuda(device_str)
     device = torch.device(device_str)
@@ -75,9 +148,7 @@ def _create_predictor_3d(model_dir, device_str, folds=(0,)):
         device=device, verbose=False, verbose_preprocessing=False,
         allow_tqdm=False,
     )
-    predictor.initialize_from_trained_model_folder(
-        model_dir, use_folds=tuple(folds), checkpoint_name="checkpoint_best.pth",
-    )
+    _safe_initialize_predictor(predictor, model_dir, tuple(folds))
     return predictor, device_str
 
 

@@ -5,11 +5,40 @@ import os
 APP_NAME = "MSLesionTool"
 MAIN_SCRIPT = "msseg_app.py"
 
-# Multi-architecture model directories
+# Best-2/arch ensemble: only folds {1, 3} for each architecture
 MODEL_DIRS = [
     ("msseg/cnn3d",     "msseg/cnn3d"),
     ("msseg/resencl3d", "msseg/resencl3d"),
     ("msseg/conv25d",   "msseg/conv25d"),
+]
+BUNDLE_FOLDS = (1, 3)
+
+# Packages dragged in by conda but not needed at runtime
+EXCLUDE_MODULES = [
+    "PyQt5", "tensorflow", "keras", "tensorboard",
+    "IPython", "tkinter", "torchvision", "torchaudio",
+    "h5py", "grpc", "grpcio", "google.protobuf",
+    "jedi", "Pythonwin", "hf_xet",
+    # Bloat from conda environment
+    "langchain", "langchain_core", "langchain_community",
+    "langchain_text_splitters", "langsmith",
+    "mlflow", "databricks",
+    "bitsandbytes",
+    "wandb",
+    "cupy", "cupy_backends",
+    "triton",
+    "sympy",
+    "networkx",
+    "pandas",
+    "pyarrow",
+    "sqlalchemy",
+    "alembic",
+    "flask",
+    "uvicorn", "starlette", "fastapi", "httpx",
+    "boto3", "botocore", "s3transfer",
+    "google.cloud", "google.auth", "google.api_core",
+    "azure",
+    "openai",
 ]
 
 
@@ -20,21 +49,12 @@ def build():
         "--name", APP_NAME,
         "--windowed",
         "--onedir",
-        "--exclude-module", "PyQt5",
-        "--exclude-module", "tensorflow",
-        "--exclude-module", "keras",
-        "--exclude-module", "tensorboard",
-        "--exclude-module", "IPython",
-        "--exclude-module", "tkinter",
-        "--exclude-module", "torchvision",
-        "--exclude-module", "torchaudio",
-        "--exclude-module", "h5py",
-        "--exclude-module", "grpc",
-        "--exclude-module", "grpcio",
-        "--exclude-module", "google.protobuf",
-        "--exclude-module", "jedi",
-        "--exclude-module", "Pythonwin",
-        "--exclude-module", "hf_xet",
+    ]
+
+    for mod in EXCLUDE_MODULES:
+        cmd.extend(["--exclude-module", mod])
+
+    cmd.extend([
         "--hidden-import", "numpy",
         "--hidden-import", "torch",
         "--hidden-import", "nnunetv2",
@@ -48,19 +68,17 @@ def build():
         "--hidden-import", "dynamic_network_architectures",
         "--hidden-import", "nnunetv2.training.nnUNetTrainer.nnUNetTrainer_WandB",
         "--collect-data", "nnunetv2",
-    ]
+        "--collect-binaries", "PyQt6",
+    ])
 
-    # If you have an icon later, you can add it here
-    # cmd.extend(["--icon", "icon.png"])
-
-    # Bundle all architecture model weights (only checkpoint_best.pth + configs)
+    # Bundle only Best-2/arch folds (1, 3) — not all 5
     for model_src, model_dst in MODEL_DIRS:
         if os.path.isdir(model_src):
             for cfg in ["dataset.json", "plans.json", "dataset_fingerprint.json"]:
                 src = os.path.join(model_src, cfg)
                 if os.path.exists(src):
                     cmd.extend(["--add-data", f"{src};{model_dst}"])
-            for fold in range(5):
+            for fold in BUNDLE_FOLDS:
                 ckpt = os.path.join(model_src, f"fold_{fold}", "checkpoint_best.pth")
                 if os.path.exists(ckpt):
                     dst = os.path.join(model_dst, f"fold_{fold}")
