@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="MSLesionTool" width="180"/>
-
 # MSLesionTool
 
 **Automated multiple-sclerosis lesion segmentation from brain MRI, powered by a multi-architecture nnU-Net ensemble.**
