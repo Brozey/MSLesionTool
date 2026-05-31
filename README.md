@@ -12,7 +12,7 @@
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-<img src="assets/figures/qualitative_grid.png" alt="Segmentation examples" width="760"/>
+<img src="assets/demo.gif" alt="MSLesionTool — automated segmentation, 3D lesion rendering, and lesion classification" width="880"/>
 
 </div>
 
@@ -95,6 +95,8 @@ pip install -r requirements.txt
 ```bash
 python msseg_app.py
 ```
+
+<p align="center"><img src="assets/screenshots/gui_main.png" alt="MSLesionTool desktop interface" width="820"/></p>
 
 1. Click **Open Patient** to select FLAIR and T1 NIfTI files.
 2. Click **Run Segmentation** to run the ensemble.
