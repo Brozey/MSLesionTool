@@ -1,0 +1,13 @@
+results/
+docs/
+assets/
+scripts/
+.github/
+*.md
+!README.md
+__pycache__/
+*.pyc
+.git/
+.venv/
+build/
+dist/

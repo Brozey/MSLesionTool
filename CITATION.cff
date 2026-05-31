@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "MSLesionTool: Multi-Architecture nnU-Net Ensemble for Automated MS Lesion Segmentation"
+authors:
+  - family-names: "Brož"
+    given-names: "Jindřich"
+year: 2025
+license: Apache-2.0
+repository-code: "https://github.com/Brozey/MSLesionTool"
+type: software

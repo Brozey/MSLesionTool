@@ -1,0 +1,80 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Model weights (download from HuggingFace: huggingface.co/Broozey/MSLesionTool)
+msseg/cnn3d/fold_*/
+msseg/resencl3d/fold_*/
+msseg/conv25d/fold_*/
+!msseg/cnn3d/fold_*/.gitkeep
+!msseg/resencl3d/fold_*/.gitkeep
+!msseg/conv25d/fold_*/.gitkeep
+
+# ONNX exported models
+*.onnx
+
+# TensorRT engine files
+*.engine
+
+# PyTorch checkpoints
+*.pth
+
+# Benchmark / experiment scripts (contain local paths)
+bench_*.py
+
+# Splash screen mesh assets
+splash_brains/
+msseg/splash_mesh.npz
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.exe
+
+# Logs
+*.log
+MSLesionTool_log.txt
+msseg_crash.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary
+*.tmp
+*.bak
+
+# Data (too large, not distributed)
+data/
+raw_data/
+profiling_results/
+wandb/
+
+# NIfTI prediction files (results of inference)
+results/predictions/
+results/xai/
+results/xai_experimental/
+
+# W&B logs
+wandb_remote/
+
+# --- public-repo hygiene ---
+results/
+*_clinical.csv
+*_portrait*
+*crash*.log
+*.npz
+trt_cache/
+config/__pycache__/
+*.egg-info/
+.venv/

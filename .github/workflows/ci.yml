@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install tooling
+        run: python -m pip install --upgrade pip ruff build
+      - name: Ruff lint
+        run: ruff check .
+      - name: Syntax compile (no heavy imports)
+        run: python -m compileall msseg scripts
+      - name: Build sdist/wheel
+        run: python -m build

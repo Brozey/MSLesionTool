@@ -1,0 +1,167 @@
+# Relative to repository root. Adjust to your local data paths.
+# ==============================================================================
+# dataset_config.yaml
+# Configuration file for the multi-source FLAIR lesion segmentation pipeline.
+#
+# For each source dataset, specify:
+#   prefix       : Unique string prepended to every filename to prevent
+#                   collisions when merging (e.g. "DS1_", "DS2_", "DS3_").
+#   images_dir   : Absolute path to the directory containing raw FLAIR images.
+#   labels_dir   : Absolute path to the directory containing lesion masks.
+#   skull_stripped_dir : (Optional) Path to pre-computed skull-stripped FLAIRs.
+#                        If null, skull stripping will be performed on-the-fly
+#                        using HD-BET (must be installed).
+#   image_suffix : The file extension to glob for inside images_dir
+#                  (default: ".nii.gz").
+#   label_suffix : The file extension to glob for inside labels_dir
+#                  (default: ".nii.gz").
+# ==============================================================================
+
+# nnU-Net dataset IDs used by this project
+nnunet_dataset_ids:
+  raw_flair:           500      # Dataset500_RawFLAIR
+  skull_stripped_flair: 501      # Dataset501_SkullStrippedFLAIR
+
+# Human-readable names written into each dataset.json
+nnunet_dataset_names:
+  raw_flair:           "RawFLAIR"
+  skull_stripped_flair: "SkullStrippedFLAIR"
+
+# Label mapping (identical for both datasets)
+labels:
+  background: 0
+  lesion:     1
+
+# Train / test split ratio (proportion allocated to imagesTr)
+train_ratio: 0.8
+
+# Random seed for reproducible splits
+random_seed: 42
+
+# ---------------------------------------------------------------------------
+# Source datasets — EDIT THESE PATHS to match your local environment
+# ---------------------------------------------------------------------------
+source_datasets:
+
+  - name: "Dataset_1"
+    prefix: "DS1"
+    images_dir: "./raw_data/dataset1/images"
+    labels_dir: "./raw_data/dataset1/labels"
+    skull_stripped_dir: null          # set path or null for on-the-fly
+    image_suffix: ".nii.gz"
+    label_suffix: ".nii.gz"
+
+  # DS2 removed — catastrophic skull-stripping failure (4.8% mean lesion loss,
+  # 15/60 subjects with >1% loss, worst case 57% loss due to only 18-33 Z-slices)
+
+  - name: "Dataset_3"
+    prefix: "DS3"
+    images_dir: "./raw_data/dataset3/images"
+    labels_dir: "./raw_data/dataset3/labels"
+    skull_stripped_dir: null
+    image_suffix: ".nii.gz"
+    label_suffix: ".nii.gz"
+
+# ---------------------------------------------------------------------------
+# Data quality settings
+# ---------------------------------------------------------------------------
+data_quality:
+  # Binarize labels: coerce any voxel > 0 to 1 (useful when source masks
+  # have multi-class or graded annotations that should become binary).
+  binarize_labels: true
+
+  # Validate that every image/label pair has matching spatial dimensions
+  # and compatible affine matrices before copying.
+  validate_geometry: true
+
+  # Maximum allowed voxel-grid shape mismatch (0 = shapes must be identical).
+  # Set to a small integer if your labels were resampled with slight rounding.
+  shape_tolerance: 0
+
+# ---------------------------------------------------------------------------
+# Split strategy
+# ---------------------------------------------------------------------------
+split:
+  # "stratified" keeps source-dataset proportions in train & test.
+  # "random"     is a simple shuffle split (original behaviour).
+  strategy: "stratified"
+
+# ---------------------------------------------------------------------------
+# Training configurations to preprocess & run
+# ---------------------------------------------------------------------------
+configurations:
+  - "3d_fullres"
+  # Uncomment to add cascade training (requires large images where a lowres
+  # stage is beneficial). nnU-Net skips it automatically if not applicable.
+  # - "3d_cascade_fullres"
+
+# ---------------------------------------------------------------------------
+# Ensemble & inference settings
+# ---------------------------------------------------------------------------
+ensemble:
+  # When true, run nnUNetv2_find_best_configuration after training to
+  # automatically determine the best single model and best ensemble.
+  auto_find_best: true
+
+  # Explicit cross-architecture ensembles to create. Each entry lists the
+  # (plans, configuration) pairs whose predictions will be merged.
+  # These are built per-dataset.
+  manual_ensembles:
+    - name: "CNN_plus_ResEncL"
+      members:
+        - { plans: "nnUNetPlans",             config: "3d_fullres" }
+        - { plans: "nnUNetResEncUNetLPlans",  config: "3d_fullres" }
+
+  # Adaptive (scale-aware) ensemble: re-weight CNN vs ResEncL based on
+  # lesion size.  Requires analyze_lesion_sizes.py to run first.
+  adaptive:
+    enabled: true
+    # Size bins (voxels) — lesions are classified into categories
+    size_bins:
+      small:  [1, 100]        # punctate periventricular lesions
+      medium: [101, 1000]     # juxtacortical patches
+      large:  [1001, null]    # confluent plaques / Dawson's fingers
+    # Composite score weighting for determining optimal model weights:
+    #   score = w_recall * recall + w_dice * dice + w_detection * detection_rate
+    score_weights:
+      recall: 0.5
+      dice: 0.3
+      detection_rate: 0.2
+
+inference:
+  # Use test-time augmentation (mirroring) during prediction.
+  # Increases accuracy at ~8x compute cost.
+  use_tta: true
+
+
+  # Number of processes for data loading during prediction.
+  num_processes: 4
+
+  # Step size for sliding window (0.5 = 50% overlap; lower = more accurate
+  # but slower).
+  step_size: 0.5
+
+# ---------------------------------------------------------------------------
+# Explainability (XAI) settings
+# ---------------------------------------------------------------------------
+xai:
+  gradcam:
+    # Enable GradCAM generation as part of the pipeline.
+    enabled: true
+
+    # Number of top encoder stages to aggregate for multi-layer GradCAM.
+    # More layers = richer heatmaps but slower. Recommended: 2-4.
+    num_encoder_layers: 3
+
+    # Export PNG slices alongside NIfTI heatmaps.
+    export_png: true
+
+    # Number of axial slices to render per subject (PNGs only).
+    num_slices_png: 5
+
+    # Target class index for GradCAM (1 = lesion foreground).
+    target_class: 1
+
+    # Which fold's checkpoint to use (typically 0 for a quick pass, or
+    # whichever fold your final model uses).
+    fold: 0

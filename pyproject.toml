@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "msseg"
+version = "1.0.0"
+description = "Multi-architecture nnU-Net ensemble for automated MS lesion segmentation from brain MRI"
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Jindřich Brož" }]
+keywords = ["multiple-sclerosis", "lesion-segmentation", "nnunet", "mri", "medical-imaging", "deep-learning"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+[project.urls]
+Homepage = "https://github.com/Brozey/MSLesionTool"
+Models = "https://huggingface.co/Broozey/MSLesionTool"
+
+[project.scripts]
+msseg = "msseg.cli:main"
+
+[tool.setuptools]
+packages = ["msseg"]
+
+[tool.setuptools.package-data]
+msseg = ["theme.qss", "cnn3d/*.json", "resencl3d/*.json", "conv25d/*.json"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+# Lint for real errors only; this is a large GUI app — keep it pragmatic.
+select = ["E9", "F63", "F7", "F82"]
